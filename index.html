@@ -193,7 +193,86 @@
   .metric{display:flex; gap:8px; flex-wrap:wrap}
   .metric .chip{border:1px dashed #BFDBFE; background:#EFF6FF; color:#1D4ED8}
   .btn-close{ background:var(--brand-primary); color:#fff; border:none; padding:10px 16px; border-radius:8px; cursor:pointer; margin-top:12px; font-weight:700; }
-  </style>
+
+  /* ===== 장애처리 전용 (content-troubleshooting 안에서만 적용) ===== */
+  #content-troubleshooting .ticket-form-row{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;
+  }
+  #content-troubleshooting .ticket-form-group{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  #content-troubleshooting .ticket-form-group label{
+    font-weight:700;
+    color:var(--text-2);
+    font-size:13px;
+  }
+  #content-troubleshooting textarea{
+    width:100%;
+    min-height:110px;
+    border:1px solid var(--border-strong);
+    border-radius:10px;
+    padding:10px 12px;
+    resize:vertical;
+  }
+  #content-troubleshooting .btn-primary{
+    background:var(--brand-primary);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:10px 16px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  #content-troubleshooting .btn-primary:hover{
+    background:var(--brand-primary-600);
+  }
+  #content-troubleshooting .subtext{
+    font-size:13px;
+    font-weight:500;
+    color:#6c757d;
+  }
+  #content-troubleshooting .tag-emergency{background:var(--error);color:#fff}
+  #content-troubleshooting .tag-pending{background:#FFF3CD;color:#856404}
+  #content-troubleshooting .ticket-filter-row{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:12px;
+    border-bottom:1px dashed #E2E8F0;
+    padding-bottom:12px;
+    margin-bottom:12px;
+  }
+/* 장애처리 폼 균등 정렬 */
+  #content-troubleshooting .ticket-form-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  #content-troubleshooting .ticket-form-group select,
+  #content-troubleshooting .ticket-form-group input,
+  #content-troubleshooting .ticket-form-group textarea {
+    width: 100%;
+  }
+
+  /* 라벨 간격 및 정렬 보정 */
+  #content-troubleshooting .ticket-form-group label {
+    margin-bottom: 4px;
+    display: inline-block;
+  }
+/* 티켓 생성 버튼 (오른쪽 정렬 + 위 여백 보정) */
+#tm-create-ticket {
+  display: block;
+  margin: 20px 0 0 auto; /* 위쪽 20px, 오른쪽 정렬 */
+}
+#tm-submit-process-result {
+  display: block;
+  margin: 20px 0 0 auto; /* 위쪽 20px, 오른쪽 정렬 */
+}
+</style>
 </head>
 <body>
   <div class="admin-wrapper">
@@ -228,11 +307,9 @@
       </a>
       <ul class="submenu-list open" id="menu-operation">
         <li style="margin-top:10px;"><a href="#" class="submenu-link" data-target="content-ai-model">(Sample) AI 모델 관리</a></li>
-        <li><a href="#" class="submenu-link" data-target="content-troubleshooting">장애처리</a></li>
-        <li><a href="#" class="submenu-link" data-target="content-tech-support">기술지원</a></li>
+        <li><a href="#" class="submenu-link" data-target="content-troubleshooting">(Sample) 장애/기술 대응</a></li>
         <li><a href="#" class="submenu-link active" data-target="content-operation-report">(Sample) 운영/분석 리포트</a></li>
         <li><a href="#" class="submenu-link" data-target="content-data-collection">데이터 수집 관리</a></li>
-        <li><a href="#" class="submenu-link" data-target="content-ab-test">AB테스트 관리</a></li>
       </ul>
 
       <a class="main-menu-toggle" data-menu="menu-billing">
@@ -924,71 +1001,244 @@
 </div>
 <!-- ========================= /운영/분석 리포트 ========================= -->
 
-<script>
-(function(){
-  // 탭 전환
-  document.querySelectorAll('#content-operation-report .tab-btn').forEach(btn=>{
-    btn.addEventListener('click',function(){
-      const card = this.closest('.card');
-      card.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-      card.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-      this.classList.add('active');
-      document.getElementById(this.dataset.target).classList.add('active');
-    });
-  });
-
-  // 월간 필터 칩
-  function renderMonthlyChips(){
-    const month = document.getElementById('m-month')?.value;
-    const cust  = document.getElementById('m-customer')?.value;
-    const region= document.getElementById('m-region')?.value;
-    const chips = [];
-    if(month) chips.push(`월=${month}`);
-    if(cust && cust!=='__all__') chips.push(`고객사=${cust}`);
-    if(region && region!=='__all__') chips.push(`리전=${region}`);
-    const box = document.getElementById('m-chips');
-    if(box) box.innerHTML = chips.map(t=>`<span class="chip">${t}</span>`).join('');
-  }
-  ['m-month','m-customer','m-region'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.addEventListener('change', renderMonthlyChips);
-  });
-  renderMonthlyChips();
-
-  // Chart.js 데모 추세
-  if(window.Chart && document.getElementById('kpiTrend')){
-    const ctx=document.getElementById('kpiTrend').getContext('2d');
-    const labels = Array.from({length:30},(_,i)=>`D${i+1}`);
-    new Chart(ctx,{
-      type:'line',
-      data:{
-        labels,
-        datasets:[
-          {label:'Availability %', data:labels.map(()=>99.5+Math.random()*0.6), yAxisID:'y', tension:.3},
-          {label:'Success Rate %', data:labels.map(()=>99+Math.random()*0.7), yAxisID:'y', tension:.3},
-          {label:'p95(ms)', data:labels.map(()=>220+Math.random()*40), yAxisID:'y1', tension:.3}
-        ]
-      },
-      options:{
-        responsive:true,
-        interaction:{mode:'index', intersect:false},
-        plugins:{legend:{position:'bottom'}},
-        scales:{
-          y:{type:'linear', position:'left', suggestedMin:98.5, suggestedMax:100},
-          y1:{type:'linear', position:'right', suggestedMin:180, suggestedMax:300, grid:{drawOnChartArea:false}}
-        }
-      }
-    });
-  }
-})();
-</script>
-
         <!-- 기타 메뉴(플레이스홀더) -->
-        <div class="submenu-content" id="content-troubleshooting"><div class="card"><div class="card-header">장애처리</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
-        <div class="submenu-content" id="content-tech-support"><div class="card"><div class="card-header">기술지원</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
-        <div class="submenu-content" id="content-data-collection"><div class="card"><div class="card-header">데이터 수집 관리</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
-        <div class="submenu-content" id="content-ab-test"><div class="card"><div class="card-header">AB테스트 관리</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
+        <div class="submenu-content" id="content-troubleshooting">
+          <div class="card" id="ticket-management">
+            <div class="card-header">
+              장애/기술 대응 (Ticket Management)
+              <span class="subtext">(고객사 관리자: 입력/수정/조회, U+ 관리자: 입력/수정/조회)</span>
+            </div>
 
+            <div class="tabs">
+              <button class="tab-btn active" data-target="tm-tab-create">
+                <span class="material-symbols-outlined" style="font-size:18px;">add_circle</span> 티켓 생성 (고객사)
+              </button>
+              <button class="tab-btn" data-target="tm-tab-status">
+                <span class="material-symbols-outlined" style="font-size:18px;">assignment</span> 처리 현황 조회 (OUTPUT)
+              </button>
+              <button class="tab-btn" data-target="tm-tab-input">
+                <span class="material-symbols-outlined" style="font-size:18px;">edit_document</span> 접수/결과 입력 (U+ 관리자)
+              </button>
+              <button class="tab-btn" data-target="tm-tab-history">
+                <span class="material-symbols-outlined" style="font-size:18px;">history</span> 티켓 처리 이력 조회
+              </button>
+            </div>
+
+            <!-- 1. 티켓 생성 -->
+            <div id="tm-tab-create" class="tab-content active">
+              <h4 style="margin-top:0;color:var(--brand-dark);">장애/기술 문의 티켓 생성</h4>
+              <div class="ticket-form-row">
+                <div class="ticket-form-group">
+                  <label for="tm-ticket-type">티켓 유형</label>
+                  <select id="tm-ticket-type">
+                    <option value="trouble">장애처리</option>
+                    <option value="inquiry">기술 문의</option>
+                  </select>
+                </div>
+                <div class="ticket-form-group" id="tm-urgency-group">
+                  <label for="tm-urgency">긴급도 (장애처리만)</label>
+                  <select id="tm-urgency">
+                    <option value="emergency">Emergency</option>
+                    <option value="normal" selected>Normal</option>
+                  </select>
+                </div>
+                <div class="ticket-form-group">
+                  <label for="tm-system-impact">영향 시스템</label>
+                  <select id="tm-system-impact">
+                    <option value="app">앱</option>
+                    <option value="server">서비스 서버</option>
+                    <option value="voip">mVoIP</option>
+                    <option value="ai">AI모델</option>
+                  </select>
+                </div>
+              </div>
+              <div class="ticket-form-group" style="margin-top:14px;">
+                <label for="tm-ticket-content">티켓 내용</label>
+                <textarea id="tm-ticket-content" placeholder="장애 발생 시간, 증상, 문의/요청 사항을 상세히 입력해주세요."></textarea>
+              </div>
+              <button type="button" class="btn-primary" id="tm-create-ticket">티켓 생성</button>
+            </div>
+
+            <!-- 2. 처리 현황 -->
+            <div id="tm-tab-status" class="tab-content">
+              <h4 style="margin-top:0;color:var(--brand-dark);">나의 티켓 처리 현황</h4>
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <th>티켓 ID</th>
+                    <th>티켓 유형</th>
+                    <th>긴급도</th>
+                    <th>영향 시스템</th>
+                    <th>처리 상태</th>
+                    <th>접수 일시</th>
+                    <th>처리 결과</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>T-20251019-001</td>
+                    <td>장애처리</td>
+                    <td><span class="tag tag-emergency">Emergency</span></td>
+                    <td>앱</td>
+                    <td><span class="tag tag-active">처리 완료</span></td>
+                    <td>2025-10-19 10:00</td>
+                    <td>조치 내역 확인 가능</td>
+                  </tr>
+                  <tr>
+                    <td>T-20251020-002</td>
+                    <td>기술 문의</td>
+                    <td>Normal</td>
+                    <td>AI모델</td>
+                    <td><span class="tag tag-pending">처리 중</span></td>
+                    <td>2025-10-20 14:30</td>
+                    <td>-</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- 3. 접수/결과 입력 -->
+            <div id="tm-tab-input" class="tab-content">
+              <h4 style="margin-top:0;color:var(--brand-dark);">대기 중 티켓 목록 (U+ 관리자)</h4>
+              <div class="ticket-filter-row">
+                <div class="ticket-form-group">
+                  <label>영향 시스템</label>
+                  <select id="tm-filter-system">
+                    <option>전체</option>
+                    <option>앱</option>
+                    <option>서비스 서버</option>
+                    <option>mVoIP</option>
+                    <option>AI모델</option>
+                  </select>
+                </div>
+                <div class="ticket-form-group">
+                  <label>처리 상태</label>
+                  <select id="tm-filter-status">
+                    <option>발행</option>
+                    <option>접수 완료</option>
+                  </select>
+                </div>
+                <div class="ticket-form-group">
+                  <label>긴급도</label>
+                  <select id="tm-filter-urgency">
+                    <option>전체</option>
+                    <option>Emergency</option>
+                  </select>
+                </div>
+              </div>
+
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>고객사</th>
+                    <th>유형</th>
+                    <th>긴급도</th>
+                    <th>영향 시스템</th>
+                    <th>접수 일시</th>
+                    <th>선택/접수 처리</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>T-20251020-003</td>
+                    <td>A 고객사</td>
+                    <td>장애처리</td>
+                    <td><span class="tag tag-emergency">Emergency</span></td>
+                    <td>서비스 서버</td>
+                    <td>2025-10-20 15:00</td>
+                    <td><button class="btn-primary" data-ticket="T-20251020-003">접수 및 담당자 통보</button></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h4 style="margin-top:30px;color:var(--brand-dark);">처리 결과 입력</h4>
+              <div class="ticket-form-group">
+                <label for="tm-result-ticket-id">티켓 ID</label>
+                <input type="text" id="tm-result-ticket-id" value="T-20251020-003" readonly style="background:#F1F5F9;border:1px solid var(--border-strong);border-radius:10px;padding:10px 12px;">
+              </div>
+              <div class="ticket-form-group">
+                <label for="tm-result-action-detail">조치 내역</label>
+                <textarea id="tm-result-action-detail" placeholder="장애 원인, 조치 방법, 재발 방지 대책 등 상세 내역을 입력해주세요."></textarea>
+              </div>
+              <div class="ticket-form-row">
+                <div class="ticket-form-group">
+                  <label for="tm-result-complete-date">처리 일시</label>
+                  <input type="datetime-local" id="tm-result-complete-date" value="2025-10-20T17:00" style="border:1px solid var(--border-strong);border-radius:10px;padding:10px 12px;">
+                </div>
+                <div class="ticket-form-group">
+                  <label for="tm-result-status">처리 상태 변경</label>
+                  <select id="tm-result-status">
+                    <option value="processing">처리 중</option>
+                    <option value="complete">처리 완료</option>
+                  </select>
+                </div>
+              </div>
+              <button type="button" class="btn-primary" id="tm-submit-process-result" style="margin-top:14px;">처리 결과 제출</button>
+            </div>
+
+            <!-- 4. 이력 조회 -->
+            <div id="tm-tab-history" class="tab-content">
+              <h4 style="margin-top:0;color:var(--brand-dark);">티켓 처리 이력 및 통계</h4>
+              <div class="ticket-filter-row">
+                <div class="ticket-form-group">
+                  <label>기간 설정</label>
+                  <input type="month" id="tm-history-month" value="2025-10" style="border:1px solid var(--border-strong);border-radius:10px;padding:10px 12px;">
+                </div>
+                <div class="ticket-form-group">
+                  <label>티켓 유형</label>
+                  <select id="tm-history-type"><option>전체</option><option>장애처리</option><option>기술 문의</option></select>
+                </div>
+                <div class="ticket-form-group">
+                  <label>영향 시스템</label>
+                  <select id="tm-history-system"><option>전체</option><option>앱</option><option>서비스 서버</option><option>mVoIP</option><option>AI모델</option></select>
+                </div>
+                <div class="ticket-form-group">
+                  <label>처리 상태</label>
+                  <select id="tm-history-status"><option>전체</option><option>처리 완료</option><option>처리 중</option></select>
+                </div>
+              </div>
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <th>티켓 ID</th>
+                    <th>긴급도</th>
+                    <th>영향 시스템</th>
+                    <th>티켓 내용 (요약)</th>
+                    <th>처리 상태</th>
+                    <th>접수 일시</th>
+                    <th>처리 완료 일시</th>
+                    <th>리드타임 (h)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>T-20250901-010</td>
+                    <td>Normal</td>
+                    <td>AI모델</td>
+                    <td>최다 빈도 키워드 분석 오류 문의</td>
+                    <td><span class="tag tag-active">처리 완료</span></td>
+                    <td>2025-09-01 11:00</td>
+                    <td>2025-09-02 09:00</td>
+                    <td>22.0</td>
+                  </tr>
+                  <tr>
+                    <td>T-20250815-005</td>
+                    <td>Emergency</td>
+                    <td>mVoIP</td>
+                    <td>통화 품질 저하 현상 (상세)</td>
+                    <td><span class="tag tag-active">처리 완료</span></td>
+                    <td>2025-08-15 09:30</td>
+                    <td>2025-08-15 11:00</td>
+                    <td>1.5</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+        <div class="submenu-content" id="content-data-collection"><div class="card"><div class="card-header">데이터 수집 관리</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
         <div class="submenu-content" id="content-saas-product"><div class="card"><div class="card-header">상품 / 기능 정의</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
         <div class="submenu-content" id="content-client-iam"><div class="card"><div class="card-header">관리자 ID 관리</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
         <div class="submenu-content" id="content-client-tos"><div class="card"><div class="card-header">고객사 약관 설정</div><p class="alert-info">상세 GUI 구성 예정입니다.</p></div></div>
@@ -1249,6 +1499,84 @@
   const modal=document.getElementById('engineModal');
   const modalTitle=document.getElementById('modalTitle');
   const modalBody=document.getElementById('modalBody');
+  // 1) 장애처리용 트러블슈팅 가이드 데이터
+const troubleshootingGuides = {
+  app: {
+    title: "[안내] 영향 시스템: APP 관련 트러블슈팅",
+    body: `
+      <h4>1. 기본 확인</h4>
+      <ul class="bul">
+        <li>앱/OS 버전, 단말 모델 수집</li>
+        <li>특정 고객/계정만 발생하는지 재현</li>
+        <li>최근 앱 배포/설정 변경 여부 확인</li>
+      </ul>
+      <h4>2. 서버 연계 점검</h4>
+      <ul class="bul">
+        <li>API 응답코드/지연 시간 확인</li>
+        <li>에러 발생 시 로그 첨부해서 티켓로 올리기</li>
+      </ul>
+    `
+  },
+  server: {
+    title: "[안내] 영향 시스템: SERVER 관련 트러블슈팅",
+    body: `
+      <h4>1. 현상 파악</h4>
+      <ul class="bul">
+        <li>장애 시간대, 영향 범위(고객사/리전) 명시</li>
+        <li>에러 코드/메시지 포함해서 수집</li>
+      </ul>
+      <h4>2. 점검 순서</h4>
+      <ul class="bul">
+        <li>최근 배포/설정 변경 유무</li>
+        <li>게이트웨이(APIM) 로그</li>
+        <li>백엔드 서비스 헬스체크</li>
+      </ul>
+    `
+  },
+  voip: {
+    title: "[안내] 영향 시스템: mVoIP 관련 트러블슈팅",
+    body: `
+      <h4>1. 수집 항목</h4>
+      <ul class="bul">
+        <li>통화 시간, 통화 품질 스크린샷/로그</li>
+        <li>망/위치/단말 정보</li>
+      </ul>
+      <h4>2. 확인</h4>
+      <ul class="bul">
+        <li>SIP/신호 로그 확보</li>
+        <li>네트워크 품질(지연/패킷로스)</li>
+      </ul>
+    `
+  },
+  ai: {
+    title: "[안내] 영향 시스템: AI 관련 트러블슈팅",
+    body: `
+      <h4>1. 호출 정보 수집</h4>
+      <ul class="bul">
+        <li>호출한 모델/엔진 이름, 버전</li>
+        <li>요청/응답 페이로드(JSON) 캡처</li>
+        <li>응답 시간 또는 타임아웃 여부</li>
+      </ul>
+      <h4>2. 최근 변경 확인</h4>
+      <ul class="bul">
+        <li>모델 재배포/룰 업데이트 이력</li>
+        <li>고객사별 다른 모델 적용 여부</li>
+      </ul>
+    `
+  }
+};
+
+// 2) 공통 모달 열기 함수 (기존 모달 재사용)
+function openTroubleshootingGuide(systemKey) {
+  const guide = troubleshootingGuides[systemKey] || {
+    title: "트러블슈팅 안내",
+    body: "<p>해당 시스템에 대한 가이드가 아직 등록되지 않았습니다.</p>"
+  };
+  modalTitle.innerText = guide.title;
+  modalBody.innerHTML = guide.body;
+  modal.style.display = 'flex';
+  modal.setAttribute('aria-hidden', 'false');
+}
   const closeModal=document.getElementById('closeModal');
 
   const engineDetails={
@@ -1568,6 +1896,14 @@
       td.dataset.enhanced = '1';
     });
   }
+// 장애처리 탭의 "영향 시스템" 선택 시 가이드 모달 열기
+const impactSelect = document.getElementById('tm-system-impact');
+if (impactSelect) {
+  impactSelect.addEventListener('change', function() {
+    // select 의 value 가 app / server / voip / ai 로 이미 맞춰져 있으니까 그대로 쓴다
+    openTroubleshootingGuide(this.value);
+  });
+}
 
   function enhanceTablesForUX(){
     buildUpdateCells(document);
@@ -1637,7 +1973,7 @@
         const va=sevOrder[sa]||0, vb=sevOrder[sb]||0; return vb-va;
       }
       const ta=text(a,idx), tb=text(b,idx);
-      const na=parseFloat(ta.replace(/[^\d.]/g,'')), nb=parseFloat(tb.replace(/[^\d.]/g,''));
+      const na=parseFloat(ta.replace(/[^\d.]/g,'')), nb=parseFloat(tb.replace(/[^\d.]/g,'')); 
       if(!isNaN(na) && !isNaN(nb)) return na-nb;
       return ta.localeCompare(tb,'en',{numeric:true});
     };
@@ -1716,7 +2052,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const C_NEUTRAL = css.getPropertyValue('--border-strong').trim() || '#CBD5E1';
   const C_SUCCESS = css.getPropertyValue('--success').trim() || '#14B8A6';
 
-  const num = (s)=> typeof s==='number' ? s : parseFloat(String(s||'').replace(/[^\d.]/g,''));
+  const num = (s)=> typeof s==='number' ? s : parseFloat(String(s||'').replace(/[^\d.]/g,'')); 
 
   const slaVal = num(document.getElementById('kpi-sla')?.textContent || 86);
   const elSla = document.getElementById('chart-sla');
@@ -1787,6 +2123,135 @@ document.addEventListener('DOMContentLoaded', function () {
         for (const id in Chart.instances) { Chart.instances[id].resize?.(); }
       }, 50)
     ));
+});
+// ----- 릴리스/설정변경 타임라인 & KPI 추세 -----
+const elTrend = document.getElementById('kpiTrend');
+if (window.Chart && elTrend) {
+  const ctx = elTrend.getContext('2d');
+  const labels = Array.from({length: 30}, (_, i) => `D${i + 1}`);
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Availability %',
+          data: labels.map(() => 99.5 + Math.random() * 0.6),
+          borderColor: '#3B82F6',
+          backgroundColor: 'rgba(59,130,246,0.1)',
+          tension: 0.3,
+          yAxisID: 'y'
+        },
+        {
+          label: 'Success Rate %',
+          data: labels.map(() => 99 + Math.random() * 0.7),
+          borderColor: '#F87171',
+          backgroundColor: 'rgba(248,113,113,0.1)',
+          tension: 0.3,
+          yAxisID: 'y'
+        },
+        {
+          label: 'p95(ms)',
+          data: labels.map(() => 220 + Math.random() * 40),
+          borderColor: '#F59E0B',
+          backgroundColor: 'rgba(245,158,11,0.1)',
+          tension: 0.3,
+          yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { position: 'bottom' } },
+      scales: {
+        y: {
+          type: 'linear',
+          position: 'left',
+          suggestedMin: 98.5,
+          suggestedMax: 100.2,
+          grid: { color: '#E5E7EB' }
+        },
+        y1: {
+          type: 'linear',
+          position: 'right',
+          suggestedMin: 180,
+          suggestedMax: 300,
+          grid: { drawOnChartArea: false }
+        }
+      }
+    }
+  });
+}
+</script>
+
+<!-- ===== 장애처리 전용 스크립트 ===== -->
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const root = document.getElementById('ticket-management');
+  if(!root) return;
+
+  // 탭 전환 (content-troubleshooting 안에서만)
+  root.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      const target = this.dataset.target;
+      root.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      root.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+      this.classList.add('active');
+      root.querySelector('#'+target)?.classList.add('active');
+    });
+  });
+
+  // 티켓 유형에 따른 긴급도 표시
+  const typeSel = root.querySelector('#tm-ticket-type');
+  const urgGrp = root.querySelector('#tm-urgency-group');
+  if(typeSel){
+    const toggle = () => {
+      if(typeSel.value === 'trouble') urgGrp.style.display = 'block';
+      else urgGrp.style.display = 'none';
+    };
+    typeSel.addEventListener('change', toggle);
+    toggle();
+  }
+
+  // 영향 시스템 선택 시 안내
+  root.querySelector('#tm-system-impact')?.addEventListener('change', function(){
+    alert('[안내] 영향 시스템: '+this.value+' 관련 트러블슈팅 가이드를 안내합니다. (시뮬레이션)');
+  });
+
+  // 티켓 생성
+  root.querySelector('#tm-create-ticket')?.addEventListener('click', function(){
+    const content = root.querySelector('#tm-ticket-content').value.trim();
+    if(!content){
+      alert('티켓 내용을 입력해주세요.');
+      return;
+    }
+    alert('티켓이 성공적으로 생성되었습니다. (시뮬레이션)');
+    root.querySelector('#tm-ticket-content').value = '';
+  });
+
+  // 접수 및 담당자 통보 버튼
+  root.querySelectorAll('#tm-tab-input table button[data-ticket]').forEach(btn=>{
+    btn.addEventListener('click', function(){
+      const id = this.dataset.ticket;
+      const input = root.querySelector('#tm-result-ticket-id');
+      if(input) input.value = id;
+      alert('티켓 '+id+'가 접수/담당자 통보되었습니다. (시뮬레이션)');
+    });
+  });
+
+  // 처리 결과 제출
+  root.querySelector('#tm-submit-process-result')?.addEventListener('click', function(){
+    const detail = root.querySelector('#tm-result-action-detail').value.trim();
+    if(!detail){
+      alert('조치 내역을 입력해주세요.');
+      return;
+    }
+    alert('처리 결과가 제출되었습니다. (시뮬레이션)');
+    root.querySelector('#tm-result-action-detail').value = '';
+  });
 });
 </script>
 </body>
