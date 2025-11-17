@@ -7,11 +7,68 @@
   <style>
     * { box-sizing: border-box; }
 
+    /* =========================
+       Color Design Tokens
+       (이 블록만 복사하면 다른 코드에도 동일 컬러 적용 가능)
+    ========================= */
+    :root {
+      /* Base */
+      --bg-body: #f3f4f6;
+      --text-main: #111827;
+      --text-sub: #4b5563;
+      --text-muted: #6b7280;
+      --text-light: #9ca3af;
+
+      /* Brand / Primary */
+      --brand-grad-from: #3b72ea;
+      --brand-grad-to: #42a5fc;
+      --brand-main: #2563eb;
+      --brand-main-dark: #1d4ed8;
+      --brand-main-deep: #1e3a8a;
+
+      /* Surface / Border */
+      --surface: #ffffff;
+      --surface-soft: #f9fafb;
+      --surface-softer: #f3f4f6;
+      --border-soft: #e5e7eb;
+      --border-input: #d1d5db;
+
+      /* Sidebar / Menu */
+      --sidebar-bg: #f9fafb;
+      --sidebar-title: #707784;
+      --menu-text: #374151;
+      --submenu-dot: #9ca3af;
+
+      /* Accents */
+      --accent-chip-bg: #e0e7ff;
+      --accent-chip-bg-strong: #eef2ff;
+      --accent-chip-text: #1e3a8a;
+      --accent-hover: #e5edff;
+      --accent-row-alt: #fcfdff;
+      --accent-link: #2563eb;
+
+      /* Buttons */
+      --btn-primary-bg: #111827;
+      --btn-primary-bg-hover: #1f2937;
+      --btn-danger-border: #f97373;
+      --btn-danger-text: #b91c1c;
+      --btn-danger-bg-hover: #fef2f2;
+
+      /* Table / Pagination */
+      --table-head-bg: #f3f4f6;
+      --pagination-border: #d1d5db;
+      --pagination-bg-hover: #e5edff;
+      --pagination-border-hover: #bfdbfe;
+
+      /* Stub */
+      --stub-border: #d1d5db;
+    }
+
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", system-ui, sans-serif;
-      background: #f3f4f6;
-      color: #111827;
+      background: var(--bg-body);
+      color: var(--text-main);
     }
 
     /* =========================
@@ -25,7 +82,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: linear-gradient(90deg, #3b72ea, #42a5fc);
+      background: linear-gradient(90deg, var(--brand-grad-from), var(--brand-grad-to));
       color: #ffffff;
       z-index: 20;
     }
@@ -73,7 +130,7 @@
       height: 30px;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.95);
-      color: #2563eb;
+      color: var(--brand-main);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -93,14 +150,14 @@
     /* 사이드바 */
     .sidebar {
       width: 260px;
-      background: #f9fafb;
-      border-right: 1px solid #e5e7eb;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border-soft);
       padding: 20px 16px;
     }
     .sidebar-section-title {
       font-size: 14px;
       font-weight: 600;
-      color: #707784;
+      color: var(--sidebar-title);
       margin-bottom: 12px;
     }
     .menu-list {
@@ -114,7 +171,7 @@
     }
     .menu-item {
       border-radius: 8px;
-      color: #374151;
+      color: var(--menu-text);
     }
 
     .menu-main {
@@ -126,10 +183,10 @@
       border-radius: 8px;
     }
     .menu-main:hover {
-      background: #e5edff;
+      background: var(--accent-hover);
     }
     .menu-item.active > .menu-main {
-      background: #2563eb;
+      background: var(--brand-main);
       color: #ffffff;
       font-weight: 600;
     }
@@ -147,7 +204,7 @@
       align-items: center;
       justify-content: center;
       font-size: 11px;
-      color: #1d4ed8;
+      color: var(--brand-main-dark);
     }
     .menu-item.active .menu-icon {
       background: rgba(255, 255, 255, 0.15);
@@ -188,18 +245,18 @@
       width: 3px;
       height: 3px;
       border-radius: 999px;
-      background: #9ca3af;
+      background: var(--submenu-dot);
     }
     .submenu-item:hover {
-      background: #e5edff;
+      background: var(--accent-hover);
     }
     .submenu-item.active {
-      background: #2563eb;
+      background: var(--brand-main);
       color: #ffffff;
       font-weight: 600;
     }
     .submenu-item.active::before {
-      background: #2563eb;
+      background: var(--brand-main);
     }
 
     /* 메인 컨텐츠 */
@@ -211,14 +268,14 @@
 
     .breadcrumb {
       font-size: 14px;
-      color: #9ca3af;
+      color: var(--text-light);
       display: flex;
       align-items: center;
       gap: 4px;
       margin-bottom: 10px;
     }
     .breadcrumb span.current {
-      color: #4b5563;
+      color: var(--text-sub);
       font-weight: 600;
     }
 
@@ -226,14 +283,14 @@
       font-size: 20px;
       font-weight: 700;
       margin-bottom: 18px;
-      color: #111827;
+      color: var(--text-main);
     }
 
     /* =========================
        검색/필터 영역
     ========================= */
     .filter-card {
-      background: #eef2ff;
+      background: var(--accent-chip-bg-strong);
       border-radius: 12px;
       padding: 16px 18px 14px;
       margin-bottom: 20px;
@@ -252,12 +309,12 @@
       border-radius: 999px;
       border: none;
       font-size: 12px;
-      background: #e0e7ff;
-      color: #1e3a8a;
+      background: var(--accent-chip-bg);
+      color: var(--accent-chip-text);
       cursor: pointer;
     }
     .filter-chip.active {
-      background: #2563eb;
+      background: var(--brand-main);
       color: #ffffff;
     }
 
@@ -273,24 +330,24 @@
       flex-direction: column;
       gap: 4px;
       font-size: 12px;
-      color: #4b5563;
+      color: var(--text-sub);
     }
     .field select,
     .field input {
       min-width: 160px;
       padding: 7px 10px;
       border-radius: 8px;
-      border: 1px solid #d1d5db;
-      background: #ffffff;
+      border: 1px solid var(--border-input);
+      background: var(--surface);
       font-size: 13px;
       outline: none;
     }
     .field input::placeholder {
-      color: #9ca3af;
+      color: var(--text-light);
     }
     .field select:focus,
     .field input:focus {
-      border-color: #2563eb;
+      border-color: var(--brand-main);
       box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.15);
     }
 
@@ -308,13 +365,13 @@
       padding: 10px 32px;
       border-radius: 8px;
       border: none;
-      background: #111827;
+      background: var(--btn-primary-bg);
       color: #ffffff;
       font-size: 14px;
       cursor: pointer;
     }
     .btn-primary:hover {
-      background: #1f2937;
+      background: var(--btn-primary-bg-hover);
     }
 
     /* =========================
@@ -327,10 +384,10 @@
       align-items: center;
       justify-content: space-between;
       font-size: 13px;
-      color: #4b5563;
+      color: var(--text-sub);
     }
     .list-toolbar strong {
-      color: #111827;
+      color: var(--text-main);
     }
     .toolbar-actions {
       display: flex;
@@ -339,20 +396,20 @@
     .btn-outline-red {
       padding: 7px 16px;
       border-radius: 8px;
-      border: 1px solid #f97373;
+      border: 1px solid var(--btn-danger-border);
       background: #ffffff;
-      color: #b91c1c;
+      color: var(--btn-danger-text);
       font-size: 13px;
       cursor: pointer;
     }
     .btn-outline-red:hover {
-      background: #fef2f2;
+      background: var(--btn-danger-bg-hover);
     }
     .btn-dark {
       padding: 7px 16px;
       border-radius: 8px;
       border: none;
-      background: #111827;
+      background: var(--btn-primary-bg);
       color: #ffffff;
       font-size: 13px;
       cursor: pointer;
@@ -361,16 +418,16 @@
       gap: 6px;
     }
     .btn-dark:hover {
-      background: #1f2937;
+      background: var(--btn-primary-bg-hover);
     }
 
     /* =========================
        테이블
     ========================= */
     .table-wrap {
-      background: #ffffff;
+      background: var(--surface);
       border-radius: 12px;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--border-soft);
       overflow: hidden;
     }
     table {
@@ -379,30 +436,30 @@
       font-size: 13px;
     }
     thead {
-      background: #f3f4f6;
+      background: var(--table-head-bg);
     }
     th, td {
       padding: 10px 12px;
       text-align: left;
-      border-bottom: 1px solid #e5e7eb;
+      border-bottom: 1px solid var(--border-soft);
       white-space: nowrap;
     }
     th {
       font-weight: 600;
-      color: #4b5563;
+      color: var(--text-sub);
       font-size: 12px;
     }
     tbody tr:nth-child(even) {
-      background: #fcfdff;
+      background: var(--accent-row-alt);
     }
     tbody tr.selected {
-      background: #eef2ff;
+      background: var(--accent-chip-bg-strong);
     }
     tbody tr:hover {
-      background: #e5edff;
+      background: var(--accent-hover);
     }
     .text-link {
-      color: #2563eb;
+      color: var(--accent-link);
       text-decoration: underline;
       text-decoration-thickness: 0.07em;
       text-underline-offset: 2px;
@@ -420,15 +477,15 @@
       align-items: center;
       justify-content: space-between;
       padding: 8px 12px;
-      background: #ffffff;
+      background: var(--surface);
       font-size: 12px;
-      color: #4b5563;
+      color: var(--text-sub);
     }
     .rows-per-page select {
       padding: 4px 8px;
       border-radius: 6px;
-      border: 1px solid #d1d5db;
-      background: #ffffff;
+      border: 1px solid var(--border-input);
+      background: var(--surface);
       font-size: 12px;
     }
 
@@ -441,8 +498,8 @@
       min-width: 26px;
       height: 26px;
       border-radius: 6px;
-      border: 1px solid #d1d5db;
-      background: #ffffff;
+      border: 1px solid var(--pagination-border);
+      background: var(--surface);
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -450,33 +507,33 @@
       font-size: 12px;
     }
     .page-btn.active {
-      background: #2563eb;
-      border-color: #2563eb;
+      background: var(--brand-main);
+      border-color: var(--brand-main);
       color: #ffffff;
       font-weight: 600;
     }
     .page-btn:hover {
-      background: #e5edff;
-      border-color: #bfdbfe;
+      background: var(--pagination-bg-hover);
+      border-color: var(--pagination-border-hover);
     }
 
     /* =========================
        Stub 카드 (미구현 화면용)
     ========================= */
     .stub-card {
-      background: #ffffff;
+      background: var(--surface);
       border-radius: 12px;
-      border: 1px dashed #d1d5db;
+      border: 1px dashed var(--stub-border);
       padding: 32px 24px;
       text-align: center;
-      color: #6b7280;
+      color: var(--text-muted);
       font-size: 14px;
       margin-top: 8px;
     }
     .stub-title {
       font-size: 18px;
       font-weight: 600;
-      color: #111827;
+      color: var(--text-main);
       margin-bottom: 8px;
     }
     .stub-desc {
@@ -491,7 +548,7 @@
       .sidebar {
         width: 100%;
         border-right: none;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid var(--border-soft);
       }
       .main {
         padding: 18px 14px 24px;
@@ -762,7 +819,6 @@
       const breadcrumbTop = document.getElementById("breadcrumb-top");
       const breadcrumbMid = document.getElementById("breadcrumb-mid");
       const breadcrumbLeaf = document.getElementById("breadcrumb-leaf");
-      const pageTitle = document.getElementById("page-title");
       const pageContent = document.getElementById("page-content");
 
       // 초기 계정 관리 화면 HTML 보관
@@ -838,7 +894,7 @@
       }
 
       function setPage(topLabel, l2Label, l3Label) {
-        // Breadcrumb 및 제목 갱신
+        // Breadcrumb 갱신
         breadcrumbTop.textContent = topLabel;
         breadcrumbMid.textContent = l2Label;
         breadcrumbLeaf.textContent = l3Label;
