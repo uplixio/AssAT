@@ -1,1012 +1,255 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>ixi-O O&M – 사용자 관리</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ixi-O Global B2B</title>
   <style>
-    * { box-sizing: border-box; }
-
-    /* =========================
-       Color Design Tokens
-       (이 블록만 복사하면 다른 코드에도 동일 컬러 적용 가능)
-    ========================= */
+    /* Design System & Reset */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+    
     :root {
-      /* Base */
-      --bg-body: #f3f4f6;
-      --text-main: #111827;
-      --text-sub: #4b5563;
-      --text-muted: #6b7280;
-      --text-light: #9ca3af;
-
-      /* Brand / Primary */
-      --brand-grad-from: #3b72ea;
-      --brand-grad-to: #42a5fc;
-      --brand-main: #2563eb;
-      --brand-main-dark: #1d4ed8;
-      --brand-main-deep: #1e3a8a;
-
-      /* Surface / Border */
-      --surface: #ffffff;
-      --surface-soft: #f9fafb;
-      --surface-softer: #f3f4f6;
-      --border-soft: #e5e7eb;
-      --border-input: #d1d5db;
-
-      /* Sidebar / Menu */
-      --sidebar-bg: #f9fafb;
-      --sidebar-title: #707784;
-      --menu-text: #374151;
-      --submenu-dot: #9ca3af;
-
-      /* Accents */
-      --accent-chip-bg: #e0e7ff;
-      --accent-chip-bg-strong: #eef2ff;
-      --accent-chip-text: #1e3a8a;
-      --accent-hover: #e5edff;
-      --accent-row-alt: #fcfdff;
-      --accent-link: #2563eb;
-
-      /* Buttons */
-      --btn-primary-bg: #111827;
-      --btn-primary-bg-hover: #1f2937;
-      --btn-danger-border: #f97373;
-      --btn-danger-text: #b91c1c;
-      --btn-danger-bg-hover: #fef2f2;
-
-      /* Table / Pagination */
-      --table-head-bg: #f3f4f6;
-      --pagination-border: #d1d5db;
-      --pagination-bg-hover: #e5edff;
-      --pagination-border-hover: #bfdbfe;
-
-      /* Stub */
-      --stub-border: #d1d5db;
+      --bg-white: #FFFFFF;
+      --bg-light: #F8F9FA;
+      --trust-blue: #0087FF;
+      --alert-red: #E53935;
+      --dark-slate: #1A1A1A;
+      --cool-gray: #666666;
+      --border-radius: 16px;
+      --shadow-soft: 0 10px 30px rgba(0,0,0,0.05);
     }
 
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", system-ui, sans-serif;
-      background: var(--bg-body);
-      color: var(--text-main);
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Poppins', 'Noto Sans KR', sans-serif; color: var(--dark-slate); background: var(--bg-white); line-height: 1.6; }
+    img { max-width: 100%; height: auto; display: block; }
+    
+    /* Navigation */
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: var(--bg-white); border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 24px; font-weight: 700; color: var(--trust-blue); letter-spacing: -0.5px; }
+    .nav-links { display: flex; gap: 30px; }
+    .nav-links a { text-decoration: none; color: var(--dark-slate); font-weight: 500; }
+    .btn-outline { padding: 10px 24px; border: 2px solid var(--trust-blue); color: var(--trust-blue); border-radius: 30px; text-decoration: none; font-weight: 600; transition: all 0.3s; }
+    .btn-outline:hover { background: var(--trust-blue); color: #fff; }
 
-    /* =========================
-       헤더 (블루 계열)
-    ========================= */
-    .header {
-      position: fixed;
-      inset: 0 0 auto 0;
-      height: 60px;
-      padding: 0 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: linear-gradient(90deg, var(--brand-grad-from), var(--brand-grad-to));
-      color: #ffffff;
-      z-index: 20;
-    }
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 128px;
-    }
-    .logo {
-      font-weight: 800;
-      font-size: 22px;
-      letter-spacing: 0.04em;
-    }
-    .top-nav {
-      display: flex;
-      gap: 50px;
-      font-size: 16px;
-    }
-    .top-nav-item {
-      padding: 6px 10px;
-      border-radius: 999px;
-      cursor: pointer;
-      opacity: 0.75;
-      white-space: nowrap;
-    }
-    .top-nav-item:hover {
-      background: rgba(255, 255, 255, 0.18);
-      opacity: 1;
-    }
-    .top-nav-item.active {
-      background: #ffffff;
-      color: #156fc8;
-      font-weight: 600;
-      opacity: 1;
-    }
+    /* Container */
+    .container { max-width: 1200px; margin: 0 auto; padding: 80px 20px; }
 
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 13px;
-    }
-    .avatar {
-      width: 30px;
-      height: 30px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.95);
-      color: var(--brand-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 14px;
-    }
+    /* Section 1: Hero */
+    .hero { display: flex; align-items: center; justify-content: space-between; gap: 50px; padding: 100px 5%; background: var(--bg-white); }
+    .hero-content { flex: 1; }
+    .hero h1 { font-size: 3.5rem; font-weight: 700; line-height: 1.2; margin-bottom: 20px; color: var(--dark-slate); }
+    .hero h1 span { color: var(--trust-blue); }
+    .hero p { font-size: 1.2rem; color: var(--cool-gray); margin-bottom: 40px; }
+    
+    /* Search Bar (Truecaller Style) */
+    .search-bar { display: flex; background: #fff; border: 1px solid #ddd; border-radius: 50px; padding: 8px; box-shadow: var(--shadow-soft); max-width: 500px; }
+    .search-bar input { flex: 1; border: none; outline: none; padding: 10px 20px; font-size: 1rem; font-family: inherit; border-radius: 50px; }
+    .search-bar button { background: var(--trust-blue); color: #fff; border: none; padding: 12px 30px; border-radius: 50px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+    .search-bar button:hover { background: #006bce; }
+    .hero-image { flex: 1; display: flex; justify-content: center; }
+    .hero-image div { width: 300px; height: 600px; background: var(--bg-light); border-radius: 40px; border: 12px solid #333; box-shadow: var(--shadow-soft); position: relative; overflow: hidden; }
 
-    /* =========================
-       레이아웃
-    ========================= */
-    .layout {
-      display: flex;
-      margin-top: 60px; /* header height */
-      min-height: calc(100vh - 60px);
-    }
+    /* Section 2: Social Proof (Stats) */
+    .social-proof { background: var(--bg-light); padding: 60px 5%; text-align: center; }
+    .stats-grid { display: flex; justify-content: space-around; max-width: 1000px; margin: 0 auto; flex-wrap: wrap; gap: 30px; }
+    .stat-item h2 { font-size: 3.5rem; color: var(--trust-blue); font-weight: 700; margin-bottom: 10px; }
+    .stat-item p { font-size: 1.1rem; color: var(--cool-gray); font-weight: 500; }
 
-    /* 사이드바 */
-    .sidebar {
-      width: 260px;
-      background: var(--sidebar-bg);
-      border-right: 1px solid var(--border-soft);
-      padding: 20px 16px;
-    }
-    .sidebar-section-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--sidebar-title);
-      margin-bottom: 12px;
-    }
-    .menu-list {
-      list-style: none;
-      padding: 0;
-      margin: 2;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      font-size: 14px;
-    }
-    .menu-item {
-      border-radius: 8px;
-      color: var(--menu-text);
-    }
+    /* Section 3: Z-Pattern Features */
+    .z-pattern { padding: 100px 5%; }
+    .z-row { display: flex; align-items: center; gap: 60px; margin-bottom: 100px; }
+    .z-row.reverse { flex-direction: row-reverse; }
+    .z-content { flex: 1; }
+    .z-image { flex: 1; height: 400px; background: var(--bg-light); border-radius: var(--border-radius); box-shadow: var(--shadow-soft); }
+    
+    .tag { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-bottom: 20px; }
+    .tag.red { background: rgba(229, 57, 53, 0.1); color: var(--alert-red); }
+    .tag.blue { background: rgba(0, 135, 255, 0.1); color: var(--trust-blue); }
+    
+    .z-content h3 { font-size: 2.2rem; margin-bottom: 20px; line-height: 1.3; }
+    .z-content p { font-size: 1.1rem; color: var(--cool-gray); margin-bottom: 24px; }
+    .z-content ul { list-style: none; }
+    .z-content li { font-size: 1.05rem; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; color: var(--dark-slate); font-weight: 500; }
+    .z-content li::before { content: '✔'; font-weight: bold; }
+    .z-row:nth-child(1) .z-content li::before { color: var(--alert-red); }
+    .z-row:nth-child(2) .z-content li::before { color: var(--trust-blue); }
 
-    .menu-main {
-      padding: 8px 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      border-radius: 8px;
-    }
-    .menu-main:hover {
-      background: var(--accent-hover);
-    }
-    .menu-item.active > .menu-main {
-      background: var(--brand-main);
-      color: #ffffff;
-      font-weight: 600;
-    }
-    .menu-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .menu-icon {
-      width: 18px;
-      height: 18px;
-      border-radius: 5px;
-      background: #dbeafe;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      color: var(--brand-main-dark);
-    }
-    .menu-item.active .menu-icon {
-      background: rgba(255, 255, 255, 0.15);
-      color: #ffffff;
-    }
-    .menu-arrow {
-      font-size: 12px;
-      transition: transform 0.15s ease-out;
-    }
-    .menu-item.open .menu-arrow {
-      transform: rotate(90deg);
-    }
+    /* Section 4: Feature Cards (Menu) */
+    .features-section { background: var(--bg-light); padding: 100px 5%; }
+    .section-header { text-align: center; margin-bottom: 60px; }
+    .section-header h2 { font-size: 2.5rem; margin-bottom: 16px; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
+    .feature-card { background: #fff; padding: 40px 30px; border-radius: var(--border-radius); box-shadow: var(--shadow-soft); transition: transform 0.3s; }
+    .feature-card:hover { transform: translateY(-5px); }
+    .feature-icon { width: 50px; height: 50px; background: rgba(0, 135, 255, 0.1); border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; justify-content: center; color: var(--trust-blue); font-size: 24px; font-weight: bold; }
+    .feature-card h4 { font-size: 1.3rem; margin-bottom: 16px; color: var(--dark-slate); }
+    .feature-card p { font-size: 0.95rem; color: var(--cool-gray); margin-bottom: 8px; }
 
-    /* 3Depth 서브메뉴 */
-    .submenu-list {
-      list-style: none;
-      padding: 0;
-      margin: 4px 0 4px 28px;
-      display: none;
-    }
-    .menu-item.open .submenu-list {
-      display: block;
-    }
-    .submenu-item {
-      padding: 5px 8px;
-      border-radius: 6px;
-      font-size: 13px;
-      color: #4b5563;
-      cursor: pointer;
-      position: relative;
-    }
-    .submenu-item::before {
-      content: "";
-      position: absolute;
-      left: -10px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 3px;
-      height: 3px;
-      border-radius: 999px;
-      background: var(--submenu-dot);
-    }
-    .submenu-item:hover {
-      background: var(--accent-hover);
-    }
-    .submenu-item.active {
-      background: var(--brand-main);
-      color: #ffffff;
-      font-weight: 600;
-    }
-    .submenu-item.active::before {
-      background: var(--brand-main);
-    }
+    /* Section 5: Architecture */
+    .architecture-section { padding: 100px 5%; background: #fff; text-align: center; }
+    .arch-flow { display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 50px; flex-wrap: wrap; }
+    .arch-block { padding: 30px; background: var(--bg-light); border-radius: var(--border-radius); border: 1px solid #eaeaea; min-width: 200px; font-weight: 600; }
+    .arch-block.highlight { border: 2px solid var(--trust-blue); background: rgba(0,135,255,0.02); }
+    .arrow { color: var(--trust-blue); font-size: 24px; font-weight: bold; }
+    .accordion { margin-top: 40px; cursor: pointer; color: var(--trust-blue); font-weight: 600; text-decoration: underline; }
 
-    /* 메인 컨텐츠 */
-    .main {
-      flex: 1;
-      padding: 24px 28px 32px;
-      overflow: auto;
-    }
+    /* Section 6: Bottom CTA */
+    .cta-section { background: var(--trust-blue); padding: 100px 5%; text-align: center; color: #fff; }
+    .cta-section h2 { font-size: 3rem; margin-bottom: 24px; }
+    .cta-section p { font-size: 1.2rem; margin-bottom: 40px; opacity: 0.9; }
+    .btn-solid { padding: 18px 40px; background: #fff; color: var(--trust-blue); border-radius: 50px; text-decoration: none; font-size: 1.2rem; font-weight: 700; display: inline-block; box-shadow: var(--shadow-soft); transition: 0.3s; }
+    .btn-solid:hover { transform: scale(1.05); }
 
-    .breadcrumb {
-      font-size: 14px;
-      color: var(--text-light);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      margin-bottom: 10px;
-    }
-    .breadcrumb span.current {
-      color: var(--text-sub);
-      font-weight: 600;
-    }
-
-    .page-title {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 18px;
-      color: var(--text-main);
-    }
-
-    /* =========================
-       검색/필터 영역
-    ========================= */
-    .filter-card {
-      background: var(--accent-chip-bg-strong);
-      border-radius: 12px;
-      padding: 16px 18px 14px;
-      margin-bottom: 20px;
-    }
-
-    .filter-row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 12px;
-    }
-
-    .filter-chip {
-      padding: 5px 10px;
-      border-radius: 999px;
-      border: none;
-      font-size: 12px;
-      background: var(--accent-chip-bg);
-      color: var(--accent-chip-text);
-      cursor: pointer;
-    }
-    .filter-chip.active {
-      background: var(--brand-main);
-      color: #ffffff;
-    }
-
-    .filter-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 4px;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 12px;
-      color: var(--text-sub);
-    }
-    .field select,
-    .field input {
-      min-width: 160px;
-      padding: 7px 10px;
-      border-radius: 8px;
-      border: 1px solid var(--border-input);
-      background: var(--surface);
-      font-size: 13px;
-      outline: none;
-    }
-    .field input::placeholder {
-      color: var(--text-light);
-    }
-    .field select:focus,
-    .field input:focus {
-      border-color: var(--brand-main);
-      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.15);
-    }
-
-    .field.search-input {
-      flex: 1;
-      min-width: 220px;
-    }
-
-    .search-button-wrap {
-      margin-top: 10px;
-      display: flex;
-      justify-content: center;
-    }
-    .btn-primary {
-      padding: 10px 32px;
-      border-radius: 8px;
-      border: none;
-      background: var(--btn-primary-bg);
-      color: #ffffff;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    .btn-primary:hover {
-      background: var(--btn-primary-bg-hover);
-    }
-
-    /* =========================
-       리스트 상단 툴바
-    ========================= */
-    .list-toolbar {
-      margin-top: 4px;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 13px;
-      color: var(--text-sub);
-    }
-    .list-toolbar strong {
-      color: var(--text-main);
-    }
-    .toolbar-actions {
-      display: flex;
-      gap: 8px;
-    }
-    .btn-outline-red {
-      padding: 7px 16px;
-      border-radius: 8px;
-      border: 1px solid var(--btn-danger-border);
-      background: #ffffff;
-      color: var(--btn-danger-text);
-      font-size: 13px;
-      cursor: pointer;
-    }
-    .btn-outline-red:hover {
-      background: var(--btn-danger-bg-hover);
-    }
-    .btn-dark {
-      padding: 7px 16px;
-      border-radius: 8px;
-      border: none;
-      background: var(--btn-primary-bg);
-      color: #ffffff;
-      font-size: 13px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .btn-dark:hover {
-      background: var(--btn-primary-bg-hover);
-    }
-
-    /* =========================
-       테이블
-    ========================= */
-    .table-wrap {
-      background: var(--surface);
-      border-radius: 12px;
-      border: 1px solid var(--border-soft);
-      overflow: hidden;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-    thead {
-      background: var(--table-head-bg);
-    }
-    th, td {
-      padding: 10px 12px;
-      text-align: left;
-      border-bottom: 1px solid var(--border-soft);
-      white-space: nowrap;
-    }
-    th {
-      font-weight: 600;
-      color: var(--text-sub);
-      font-size: 12px;
-    }
-    tbody tr:nth-child(even) {
-      background: var(--accent-row-alt);
-    }
-    tbody tr.selected {
-      background: var(--accent-chip-bg-strong);
-    }
-    tbody tr:hover {
-      background: var(--accent-hover);
-    }
-    .text-link {
-      color: var(--accent-link);
-      text-decoration: underline;
-      text-decoration-thickness: 0.07em;
-      text-underline-offset: 2px;
-      cursor: pointer;
-    }
-    .checkbox-cell {
-      width: 36px;
-    }
-
-    /* =========================
-       페이지네이션
-    ========================= */
-    .table-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 12px;
-      background: var(--surface);
-      font-size: 12px;
-      color: var(--text-sub);
-    }
-    .rows-per-page select {
-      padding: 4px 8px;
-      border-radius: 6px;
-      border: 1px solid var(--border-input);
-      background: var(--surface);
-      font-size: 12px;
-    }
-
-    .pagination {
-      display: inline-flex;
-      gap: 4px;
-      align-items: center;
-    }
-    .page-btn {
-      min-width: 26px;
-      height: 26px;
-      border-radius: 6px;
-      border: 1px solid var(--pagination-border);
-      background: var(--surface);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 12px;
-    }
-    .page-btn.active {
-      background: var(--brand-main);
-      border-color: var(--brand-main);
-      color: #ffffff;
-      font-weight: 600;
-    }
-    .page-btn:hover {
-      background: var(--pagination-bg-hover);
-      border-color: var(--pagination-border-hover);
-    }
-
-    /* =========================
-       Stub 카드 (미구현 화면용)
-    ========================= */
-    .stub-card {
-      background: var(--surface);
-      border-radius: 12px;
-      border: 1px dashed var(--stub-border);
-      padding: 32px 24px;
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 14px;
-      margin-top: 8px;
-    }
-    .stub-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--text-main);
-      margin-bottom: 8px;
-    }
-    .stub-desc {
-      margin: 0;
-      line-height: 1.6;
-    }
-
-    @media (max-width: 960px) {
-      .layout {
-        flex-direction: column;
-      }
-      .sidebar {
-        width: 100%;
-        border-right: none;
-        border-bottom: 1px solid var(--border-soft);
-      }
-      .main {
-        padding: 18px 14px 24px;
-      }
-      th, td {
-        padding: 8px 8px;
-      }
-    }
+    /* Footer */
+    footer { padding: 40px 5%; display: flex; justify-content: space-between; align-items: center; background: #fff; border-top: 1px solid #eee; flex-wrap: wrap; gap: 20px; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { color: var(--cool-gray); text-decoration: none; font-size: 0.95rem; }
   </style>
 </head>
 <body>
-  <!-- 헤더 -->
-  <header class="header">
-    <div class="header-left">
-      <div class="logo">ixi-O O&M</div>
-      <nav class="top-nav">
-        <!-- data-top-label로 상단 탭 식별 -->
-        <div class="top-nav-item" data-top-label="상품 운영">상품 운영</div>
-        <div class="top-nav-item active" data-top-label="서비스 운영">서비스 운영</div>
-        <div class="top-nav-item" data-top-label="서비스 정산">서비스 정산</div>
-        <div class="top-nav-item" data-top-label="일반">일반</div>
-      </nav>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="logo">ixi-O</div>
+    <div class="nav-links">
+      <a href="#">Product</a>
+      <a href="#">API Docs</a>
+      <a href="#">Privacy</a>
+      <a href="#" class="btn-outline">Contact</a>
     </div>
-    <div class="header-right">
-      <div class="avatar">A</div>
-      <span>관리자</span>
+  </nav>
+
+  <!-- Section 1: Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>통화의 피로도를 지우고,<br><span>연결의 본질</span>만 남기다.</h1>
+      <p>전 세계 매일 수십억 건의 전화. 방어하느라 핵심을 놓치고 계신가요?<br>완벽한 방어와 연결의 복원을 지금 시작하십시오.</p>
+      
+      <div class="search-bar">
+        <input type="text" placeholder="귀사의 국가/지역을 입력해보세요 (예: Singapore)">
+        <button>솔루션 검색</button>
+      </div>
     </div>
-  </header>
+    <div class="hero-image">
+      <div><!-- UI Mockup Area --></div>
+    </div>
+  </section>
 
-  <!-- 레이아웃 -->
-  <div class="layout">
-    <!-- 사이드바 -->
-    <aside class="sidebar">
-      <div class="sidebar-section-title" id="sidebar-title">서비스 운영</div>
-      <ul class="menu-list" id="sidebar-menu">
-        <!-- JS에서 동적으로 채움 -->
-      </ul>
-    </aside>
-
-    <!-- 메인 컨텐츠 -->
-    <main class="main">
-      <!-- Breadcrumb -->
-      <div class="breadcrumb">
-        <span>홈</span>
-        <span>›</span>
-        <span id="breadcrumb-top">서비스 운영</span>
-        <span>›</span>
-        <span id="breadcrumb-mid">사용자 관리</span>
-        <span>›</span>
-        <span id="breadcrumb-leaf" class="current">계정 관리</span>
+  <!-- Section 2: Social Proof -->
+  <section class="social-proof">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <h2>수십억 건</h2>
+        <p>매일 걸려오는 무의미한 전화</p>
       </div>
-
-      <!-- 페이지별 본문 컨테이너 -->
-      <div id="page-content">
-        <!-- =========================
-             [기본 화면] 서비스 운영 > 사용자 관리 > 계정 관리
-        ========================= -->
-        <!-- 검색/필터 카드 -->
-        <section class="filter-card">
-          <!-- 초성 / 알파벳 필터 -->
-          <div class="filter-row">
-            <button class="filter-chip active">ALL</button>
-            <button class="filter-chip">ㄱ</button>
-            <button class="filter-chip">ㄴ</button>
-            <button class="filter-chip">ㄷ</button>
-            <button class="filter-chip">ㄹ</button>
-            <button class="filter-chip">ㅁ</button>
-            <button class="filter-chip">ㅂ</button>
-            <button class="filter-chip">ㅅ</button>
-            <button class="filter-chip">ㅇ</button>
-            <button class="filter-chip">ㅈ</button>
-            <button class="filter-chip">ㅊ</button>
-            <button class="filter-chip">ㅋ</button>
-            <button class="filter-chip">ㅌ</button>
-            <button class="filter-chip">ㅍ</button>
-            <button class="filter-chip">ㅎ</button>
-            <button class="filter-chip">A-Z</button>
-            <button class="filter-chip">0-9</button>
-          </div>
-
-          <!-- 추가 필터 (그룹/항목/검색어) -->
-          <div class="filter-controls">
-            <div class="field">
-              <span>그룹</span>
-              <select>
-                <option>전체</option>
-                <option>개발팀</option>
-                <option>운영팀</option>
-                <option>기획팀</option>
-              </select>
-            </div>
-            <div class="field">
-              <span>항목</span>
-              <select>
-                <option>이름</option>
-                <option>이메일</option>
-                <option>아이디</option>
-              </select>
-            </div>
-            <div class="field search-input">
-              <span>&nbsp;</span>
-              <input type="text" placeholder="이름을 입력하세요" />
-            </div>
-          </div>
-
-          <!-- 검색 버튼 -->
-          <div class="search-button-wrap">
-            <button class="btn-primary">검색</button>
-          </div>
-        </section>
-
-        <!-- 리스트 상단 툴바 -->
-        <div class="list-toolbar">
-          <div>
-            <strong>전체목록</strong>
-            <span style="margin-left:8px; color:#6b7280;">전체 999 | 선택 3</span>
-          </div>
-          <div class="toolbar-actions">
-            <button class="btn-dark">＋ 사용자 등록</button>
-            <button class="btn-outline-red">삭제</button>
-          </div>
-        </div>
-
-        <!-- 사용자 목록 테이블 -->
-        <section class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th class="checkbox-cell"><input type="checkbox" /></th>
-                <th>이름</th>
-                <th>이메일</th>
-                <th>아이디</th>
-                <th>팀명</th>
-                <th>권한종류</th>
-                <th>계정상태</th>
-                <th>최근 로그인 일시</th>
-                <th>등록 일시</th>
-                <th>등록자</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="checkbox-cell"><input type="checkbox" /></td>
-                <td>김사용</td>
-                <td><span class="text-link">user01@example.com</span></td>
-                <td>user01</td>
-                <td>개발팀</td>
-                <td>사용자</td>
-                <td>활성화</td>
-                <td>2025.05.22 04:16</td>
-                <td>2025.05.22 04:16</td>
-                <td>관리자1</td>
-              </tr>
-              <tr class="selected">
-                <td class="checkbox-cell"><input type="checkbox" checked /></td>
-                <td>김운영</td>
-                <td><span class="text-link">ops@example.com</span></td>
-                <td>ops01</td>
-                <td>운영팀</td>
-                <td>매니저(데이터관리)</td>
-                <td>활성화</td>
-                <td>2025.05.22 04:16</td>
-                <td>2025.05.22 04:16</td>
-                <td>관리자1</td>
-              </tr>
-              <tr>
-                <td class="checkbox-cell"><input type="checkbox" /></td>
-                <td>박기획</td>
-                <td><span class="text-link">planner@example.com</span></td>
-                <td>plan01</td>
-                <td>기획팀</td>
-                <td>사용자</td>
-                <td>정지</td>
-                <td>2025.05.22 04:16</td>
-                <td>2025.05.22 04:16</td>
-                <td>관리자2</td>
-              </tr>
-              <tr class="selected">
-                <td class="checkbox-cell"><input type="checkbox" checked /></td>
-                <td>이개발</td>
-                <td><span class="text-link">dev02@example.com</span></td>
-                <td>dev02</td>
-                <td>개발팀</td>
-                <td>사용자</td>
-                <td>활성화</td>
-                <td>2025.05.22 04:16</td>
-                <td>2025.05.22 04:16</td>
-                <td>관리자1</td>
-              </tr>
-              <tr class="selected">
-                <td class="checkbox-cell"><input type="checkbox" checked /></td>
-                <td>최분석</td>
-                <td><span class="text-link">data01@example.com</span></td>
-                <td>data01</td>
-                <td>데이터팀</td>
-                <td>사용자</td>
-                <td>활성화</td>
-                <td>2025.05.22 04:16</td>
-                <td>2025.05.22 04:16</td>
-                <td>관리자2</td>
-              </tr>
-              <!-- 필요시 더미 행 추가 -->
-            </tbody>
-          </table>
-
-          <!-- 테이블 푸터 / 페이지네이션 -->
-          <div class="table-footer">
-            <div class="rows-per-page">
-              <label>
-                페이지당
-                <select>
-                  <option>10</option>
-                  <option>20</option>
-                  <option>50</option>
-                </select>
-                개 보기
-              </label>
-            </div>
-            <div class="pagination">
-              <button class="page-btn">«</button>
-              <button class="page-btn">‹</button>
-              <button class="page-btn">1</button>
-              <button class="page-btn active">2</button>
-              <button class="page-btn">3</button>
-              <button class="page-btn">›</button>
-              <button class="page-btn">»</button>
-            </div>
-          </div>
-        </section>
+      <div class="stat-item">
+        <h2>50%</h2>
+        <p>방어하느라 받지 않는 전화 비율</p>
       </div>
-    </main>
-  </div>
+      <div class="stat-item">
+        <h2>80%</h2>
+        <p>24시간 내에 사라지는 통화 정보</p>
+      </div>
+    </div>
+  </section>
 
-  <!-- =========================
-       메뉴/탭/3Depth 동작 자바스크립트
-  ========================= -->
-  <script>
-    // 상단 탭별 L2/L3 구조 정의
-    const MENU_STRUCTURE = {
-      "상품 운영": {
-        "상품 관리": ["상품 기준 정보"],
-        "고객사 관리": ["고객사 정보", "계약 관리"],
-        "대시보드": ["사업 실적", "학습데이터 수집"]
-      },
-      "서비스 운영": {
-        "사용자 관리": ["계정 관리"],
-        "구독 관리": ["구독 현황"],
-        "DevOps": ["AI 모델"],
-        "Support Center": ["고객사(Maxis)", "SOP / FAQ"]
-      },
-      "서비스 정산": {
-        "청구/수납": ["고객사(Maxis)", "추가 고객사(B)"]
-      },
-      "일반": {
-        "시스템": ["보안, 컴플라이언스", "설정"]
-      }
-    };
+  <!-- Section 3: Z-Pattern Features -->
+  <section class="z-pattern">
+    <!-- Block A -->
+    <div class="z-row">
+      <div class="z-content">
+        <div class="tag red">방어 / 안전·안심 팩</div>
+        <h3>가장 확실한 방어는,<br>단말기가 울리기도 전에 차단하는 것입니다.</h3>
+        <p>스팸과 사기로부터 고객을 완벽하게 보호하는 신뢰의 네트워크를 구축하세요.</p>
+        <ul>
+          <li>실시간 보이스피싱 감지 및 차단</li>
+          <li>안티 딥보이스 판별 기술</li>
+        </ul>
+      </div>
+      <div class="z-image"><!-- Red UI Mockup Area --></div>
+    </div>
+    <!-- Block B -->
+    <div class="z-row reverse">
+      <div class="z-content">
+        <div class="tag blue">생산성 / AI Agent 팩</div>
+        <h3>당신의 시간은 보호받고,<br>중요한 연결은 결코 놓치지 않습니다.</h3>
+        <p>비즈니스 고객을 위한 스마트한 통화 관리로 새로운 가치를 창출하세요.</p>
+        <ul>
+          <li>AI 비서의 긴급 전화 실시간 선별</li>
+          <li>12분 통화를 3줄로 영구 요약</li>
+        </ul>
+      </div>
+      <div class="z-image"><!-- Blue UI Mockup Area --></div>
+    </div>
+  </section>
 
-    const DEFAULT_TOP = "서비스 운영";
-    const DEFAULT_L2 = "사용자 관리";
-    const DEFAULT_L3 = "계정 관리";
+  <!-- Section 4: Feature Cards (Menu) -->
+  <section class="features-section">
+    <div class="section-header">
+      <h2>Global Feature Menu</h2>
+      <p style="color:var(--cool-gray);">시장별 규제와 고객 니즈에 완벽히 대응하는 모듈형 아키텍처</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📞</div>
+        <h4>AI Call Handling</h4>
+        <p>• AI 대신 받기 (SOHO 템플릿)</p>
+        <p>• 통화 녹음 명시적 동의 (GDPR)</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h4>Security & Trust</h4>
+        <p>• 번호 기반 스팸 알림</p>
+        <p>• 실시간 보이스피싱 감지</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✨</div>
+        <h4>AI Agent & Prod</h4>
+        <p>• 통화 텍스트 요약 및 검색</p>
+        <p>• 후속 TASK 제안</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h4>Data & Platform</h4>
+        <p>• 데이터 즉시 삭제 프로세스</p>
+        <p>• 휘발성 UI 보안 적용</p>
+      </div>
+    </div>
+  </section>
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const topNavItems = document.querySelectorAll(".top-nav-item");
-      const sidebarTitleEl = document.getElementById("sidebar-title");
-      const sidebarMenuEl = document.getElementById("sidebar-menu");
+  <!-- Section 5: Architecture -->
+  <section class="architecture-section">
+    <div class="section-header">
+      <h2>Seamless Integration</h2>
+      <p style="color:var(--cool-gray);">기존 통신망 교체 없이 즉시 배포 가능한 하이브리드 아키텍처</p>
+    </div>
+    <div class="arch-flow">
+      <div class="arch-block">Legacy NW<br><span style="font-size:0.85rem;font-weight:400;color:var(--cool-gray);">기존 부가서비스 망</span></div>
+      <div class="arrow">➔</div>
+      <div class="arch-block highlight">ixi-O API Gateway<br><span style="font-size:0.85rem;font-weight:400;color:var(--cool-gray);">모듈 단위 On/Off 라우팅</span></div>
+      <div class="arrow">➔</div>
+      <div class="arch-block">On-Device SDK<br><span style="font-size:0.85rem;font-weight:400;color:var(--cool-gray);">로컬 보안 클라우드 엣지</span></div>
+    </div>
+    <div class="accordion">[ 개발자 문서 및 코드 아키텍처 펼쳐보기 ▾ ]</div>
+  </section>
 
-      const breadcrumbTop = document.getElementById("breadcrumb-top");
-      const breadcrumbMid = document.getElementById("breadcrumb-mid");
-      const breadcrumbLeaf = document.getElementById("breadcrumb-leaf");
-      const pageContent = document.getElementById("page-content");
+  <!-- Section 6: Bottom CTA -->
+  <section class="cta-section">
+    <h2>완벽한 방어와 연결의 복원.</h2>
+    <p>귀사만의 강력한 B2B 프리미엄 경쟁력을 지금 바로 구축하세요.</p>
+    <a href="#" class="btn-solid">ixi-O 글로벌 스펙 확인 및 도입 문의</a>
+  </section>
 
-      // 초기 계정 관리 화면 HTML 보관
-      const accountManagementHTML = pageContent.innerHTML;
+  <!-- Footer -->
+  <footer>
+    <div style="font-weight:700;color:var(--dark-slate);">© 2026 ixi-O Global</div>
+    <div class="footer-links">
+      <a href="#">Product</a>
+      <a href="#">API Docs</a>
+      <a href="#">Privacy (GDPR)</a>
+      <a href="#">Contact</a>
+    </div>
+  </footer>
 
-      function setActiveTopNav(topLabel) {
-        topNavItems.forEach((item) => {
-          const label = item.getAttribute("data-top-label");
-          item.classList.toggle("active", label === topLabel);
-        });
-      }
-
-      function renderSidebar(topLabel, selectedL2, selectedL3) {
-        sidebarTitleEl.textContent = topLabel;
-        sidebarMenuEl.innerHTML = "";
-
-        const menus = MENU_STRUCTURE[topLabel] || {};
-        Object.keys(menus).forEach((l2Name) => {
-          const l3List = menus[l2Name];
-
-          const li = document.createElement("li");
-          li.className = "menu-item";
-          li.dataset.l2 = l2Name;
-
-          const isActiveL2 = l2Name === selectedL2;
-          if (isActiveL2) li.classList.add("active", "open");
-
-          // L2 메인 영역
-          const mainDiv = document.createElement("div");
-          mainDiv.className = "menu-main";
-
-          const labelDiv = document.createElement("div");
-          labelDiv.className = "menu-label";
-
-          const iconSpan = document.createElement("span");
-          iconSpan.className = "menu-icon";
-          iconSpan.textContent = l2Name[0]; // 첫 글자
-
-          const textSpan = document.createElement("span");
-          textSpan.textContent = l2Name;
-
-          labelDiv.appendChild(iconSpan);
-          labelDiv.appendChild(textSpan);
-
-          const arrowSpan = document.createElement("span");
-          arrowSpan.className = "menu-arrow";
-          arrowSpan.textContent = "›";
-
-          mainDiv.appendChild(labelDiv);
-          mainDiv.appendChild(arrowSpan);
-
-          // L3 서브메뉴
-          const subUl = document.createElement("ul");
-          subUl.className = "submenu-list";
-
-          l3List.forEach((l3Name) => {
-            const subLi = document.createElement("li");
-            subLi.className = "submenu-item";
-            subLi.dataset.l3 = l3Name;
-            subLi.textContent = l3Name;
-
-            if (isActiveL2 && l3Name === selectedL3) {
-              subLi.classList.add("active");
-            }
-
-            subUl.appendChild(subLi);
-          });
-
-          li.appendChild(mainDiv);
-          li.appendChild(subUl);
-          sidebarMenuEl.appendChild(li);
-        });
-      }
-
-      function setPage(topLabel, l2Label, l3Label) {
-        // Breadcrumb 갱신
-        breadcrumbTop.textContent = topLabel;
-        breadcrumbMid.textContent = l2Label;
-        breadcrumbLeaf.textContent = l3Label;
-
-        // 본문 컨텐츠 전환
-        if (
-          topLabel === "서비스 운영" &&
-          l2Label === "사용자 관리" &&
-          l3Label === "계정 관리"
-        ) {
-          pageContent.innerHTML = accountManagementHTML;
-        } else {
-          pageContent.innerHTML = `
-            <section class="stub-card">
-              <div class="stub-title">${l3Label}</div>
-              <p class="stub-desc">
-                이 화면(${topLabel} &gt; ${l2Label} &gt; ${l3Label})의 상세 GUI와 기능 요소는 추후 정의 및 구현될 예정입니다.
-              </p>
-            </section>
-          `;
-        }
-      }
-
-      // 상단 탭 클릭 이벤트
-      topNavItems.forEach((item) => {
-        item.addEventListener("click", () => {
-          const topLabel = item.getAttribute("data-top-label");
-          setActiveTopNav(topLabel);
-
-          const l2List = Object.keys(MENU_STRUCTURE[topLabel] || {});
-          const firstL2 = l2List[0] || "";
-          const firstL3 =
-            (firstL2 && (MENU_STRUCTURE[topLabel][firstL2] || [])[0]) || "";
-
-          renderSidebar(topLabel, firstL2, firstL3);
-          setPage(topLabel, firstL2, firstL3);
-        });
-      });
-
-      // 사이드바 메뉴 클릭 이벤트 (이벤트 위임)
-      sidebarMenuEl.addEventListener("click", (e) => {
-        const submenuEl = e.target.closest(".submenu-item");
-        const menuMainEl = e.target.closest(".menu-main");
-
-        // L3 클릭
-        if (submenuEl) {
-          const l3 = submenuEl.dataset.l3;
-          const l2 = submenuEl.closest(".menu-item").dataset.l2;
-          const top = sidebarTitleEl.textContent;
-
-          // L3 active 처리
-          sidebarMenuEl.querySelectorAll(".submenu-item").forEach((el) => {
-            el.classList.remove("active");
-          });
-          submenuEl.classList.add("active");
-
-          // L2 active/open 처리
-          sidebarMenuEl.querySelectorAll(".menu-item").forEach((el) => {
-            el.classList.remove("active");
-          });
-          submenuEl.closest(".menu-item").classList.add("active", "open");
-
-          setPage(top, l2, l3);
-          return;
-        }
-
-        // L2 클릭
-        if (menuMainEl) {
-          const li = menuMainEl.closest(".menu-item");
-          const l2 = li.dataset.l2;
-          const top = sidebarTitleEl.textContent;
-
-          // 모든 L2 초기화
-          sidebarMenuEl.querySelectorAll(".menu-item").forEach((el) => {
-            if (el !== li) {
-              el.classList.remove("active", "open");
-            }
-          });
-
-          // 현재 L2 토글 (열기 + active)
-          const willOpen = !li.classList.contains("open");
-          if (willOpen) {
-            li.classList.add("open", "active");
-          } else {
-            li.classList.remove("open", "active");
-          }
-
-          // 열릴 때 기본 L3 선택
-          if (willOpen) {
-            const menus = MENU_STRUCTURE[top] || {};
-            const l3List = menus[l2] || [];
-            const firstL3 = l3List[0] || "";
-
-            // L3 active 설정
-            sidebarMenuEl.querySelectorAll(".submenu-item").forEach((el) => {
-              el.classList.remove("active");
-            });
-            const firstSub = li.querySelector(
-              `.submenu-item[data-l3="${firstL3}"]`
-            );
-            if (firstSub) firstSub.classList.add("active");
-
-            setPage(top, l2, firstL3);
-          }
-        }
-      });
-
-      // 초기 상태 세팅
-      setActiveTopNav(DEFAULT_TOP);
-      renderSidebar(DEFAULT_TOP, DEFAULT_L2, DEFAULT_L3);
-      setPage(DEFAULT_TOP, DEFAULT_L2, DEFAULT_L3);
-    });
-  </script>
 </body>
 </html>
